@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Mert Tan Ajax Tic-Toc-Toe Game</title>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script>
+        var cPlayer = 0;
+        //var player = ["green","red"]; //Players creating
+
+        //var games = [[[],[]],[[],[]]]; //3 Dimensional array, (x,y, player id)
+        //var selected = [[],[]];
+        var greenMvs = [];
+        var redMvs = [];
+        var newGreen = [];
+        var newRed = [];
+        var gmove = 0;
+        var rmove = 0;
+        var clck = false;
+        var players = [
+        	["green", "red", "rgb(27, 188, 155)", "#1BBC9B"],
+        	["red", "green", "rgb(228, 58, 69)", "#E43A45"]
+        ];
+
+        $(document).ready(function() {
+
+        	$(".undo").hide(); // Hiding undo button;
+        	//Button Disabling
+        	$("#move").attr("disabled", true).css("cursor", "not-allowed");
+        	//Section Resizing
+        	cWidth = Math.floor(($("#main .wrapper").width() - $("#main #game").width()) / 2) - 10 //Centering Width;
+        	$("#green, #red").css("width", cWidth + "px");
+
+        	//Shuffling function
+        	function shuffle(a) {
+        		var j, x, i;
+        		for (i = a.length - 1; i > 0; i--) {
+        			j = Math.floor(Math.random() * (i + 1));
+        			x = a[i];
+        			a[i] = a[j];
+        			a[j] = x;
+        		}
+        	}
+        	//Button activation function
+        	function buttonAct(o) {
+        		$("button#" + o).removeAttr("disabled");
+        		$("button#" + o).attr("enabled", true).css("cursor", "pointer");
+        	}
+        	//Button deactiviton function
+        	function buttonDeac(o) {
+        		$("button#" + o).removeAttr("enabled");
+        		$("button#" + o).attr("disabled", true).css("cursor", "not-allowed");
+        	}
+        	shuffle(players); //Players Shuffling
+        	play(players[cPlayer][0]);
+        	//Selecting function
+
+        	//Chaning Player Function
+        	function changePlayer(p) { // p = current player
+        		//Hiding current player things.
+
+        		switch (cPlayer) {
+        			case 1:
+        				cPlayer = 0;
+        				break;
+        			default:
+        				cPlayer = 1;
+        		}
+
+        		console.log("Calling play function with : " + p);
+        		play(players[cPlayer][0]);
+        	}
+        	function wonCheck() {
+        		
+        		first = $("#box_1_1").css("background-color");
+        		second = $("#box_1_2").css("background-color");
+        		third = $("#box_1_3").css("background-color");
+        		fourth = $("#box_2_1").css("background-color");
+        		fifth = $("#box_2_2").css("background-color");
+        		sixth = $("#box_2_3").css("background-color");
+        		seventh = $("#box_3_1").css("background-color");
+        		eighth = $("#box_3_2").css("background-color");
+        		nineth= $("#box_3_3").css("background-color");
+
+				if( players[cPlayer][0] == "green" ){
+					/*
+					for(i = 0; i<greenMvs.length; i++){
+					newGreen[i] = greenMvs[i].split("");
+					}
+					*/
+					if( (first == second && second == third) || (fourth == fifth && fifth == sixth) || (seventh == eighth && eighth == nineth) || ( first == fourth && fourth == seventh ) || (second == fifth && second == eighth) || (third == sixth && sixth ==nineth) || (first == fifth && fifth == nineth) || (third == fifth && fifth == seventh) ){
+						alert("Green Won\nGame Refreshing!");
+						location.reload(); 
+					}
+				}
+				else{
+					if( (first == second && second == third) || (fourth == fifth && fifth == sixth) || (seventh == eighth && eighth == nineth) || ( first == fourth && fourth == seventh ) || (second == fifth && second == eighth) || (third == sixth && sixth ==nineth) || (first == fifth && fifth == nineth) || (third == fifth && fifth == seventh) ){
+						alert("Red Won\nGame Refreshing!");
+						location.reload(); 
+					}
+				}
+        	}
+
+        	//Our main play function
+        	function play(o) {
+        		if (o == "green") {
+        			console.log("Calling hovern function with: " + o);
+        			hovern("green", "red", "rgb(27, 188, 155)", "#1BBC9B");
+        		} else {
+        			console.log("Calling hovern function with: " + o);
+        			hovern("red", "green", "rgb(228, 58, 69)", "#E43A45");
+        		}
+        	}
+
+        	function hovern(p, a, o, q) { // p = player color, a = another color, o = rgb code, q = hexa code
+        		console.log("Turn: " + p);
+        		$("#" + p + " span#" + p + "turn").css("visibility", "visible");
+        		$("#" + a + " span#" + a + "turn").css("visibility", "hidden");
+
+        		$(".square").each(function() {
+        			if ($(this).css("background-color") == "rgba(0, 0, 0, 0)") {
+        				$(this).css("cursor", "pointer");
+        			}
+        		});
+        		//tiklandiginda bg yi kontrol et;
+        		console.log("backgrounds changing");
+        		$(".square").each(function() {
+        			if (($(this).css("background-color") != "rgb(228, 58, 69)") && ($(this).css("background-color") != "rgb(27, 188, 155)")) {
+        				$(this).css("background-color", "rgb(0, 0, 0, 0)");
+        			}
+
+        			//console.log("the span #" + $(this).attr("id") + " background changed with : " + $(this).css("background-color") );
+        		});
+        		$("#main #game .square").unbind("mouseenter");
+        		$("#main #game .square").unbind("mouseleave");
+
+        		$("#main #game .square").mouseenter(function() {
+        			console.log("");
+        			console.log("------------------------------------------------");
+        			console.log("");
+        			console.log("div: " + $(this).attr("id") + " bg: " + $(this).css("background-color"));
+
+
+        			oldBg = $(this).css("background-color");
+
+        			console.log("Click variable in square mouseenter function: " + clck);
+
+
+        			if (($(this).css("background-color") != "rgb(228, 58, 69)") && ($(this).css("background-color") != "rgb(27, 188, 155)")) {
+        				$(this).css("background-color", o);
+        			} else {
+        				$(this).css("cursor", "not-allowed");
+        			}
+        			if (clck == true) {
+        				if (oldBg == "rgba(0, 0, 0, 0)") {
+        					console.log("Clicked case, old ")
+        					$(this).css({
+        						"background-color": "rgba(0, 0, 0, 0)",
+        						"cursor": "not-allowed"
+        					});
+        				} else {
+        					//$(this).css("cursor","pointer");
+        				}
+        			}
+        		}).mouseleave(function() {
+        			//old bg ile newBg ayni degilse new b
+        			console.log("Mouse left, Old bg = " + oldBg);
+        			if (oldBg == "rgba(0, 0, 0, 0)") {
+        				$(this).css("background-color", oldBg);
+        			} else {
+        				$(this).css("cursor", "not-allowed");
+        			}
+        		});
+        	}
+
+        	$(".square").click(function() {
+        		if ($(this).css("cursor") != "not-allowed") {
+        			clck = true;
+        		} else {
+        			click = false;
+        		}
+        		console.log("Click variable in square click function: " + clck);
+        		if ($(this).css("cursor") != "not-allowed") { //If it wasn't clicked before.
+
+        			clicked = $(this).attr("id");
+        			console.log(clicked + " id li kareye tıklandı");
+        			console.log(players[cPlayer][0] + "nolu Player");
+        			clicked = clicked.split("_");
+        			console.log
+        			console.log(cPlayer + " nolu Player, " + players[cPlayer][2] + " Nolu kod " + $(this).attr("id") + " id li div");
+        			$(this).css({
+        				"background-color": players[cPlayer][2],
+        				"cursor": "not-allowed"
+        			});
+        			oldBg = players[cPlayer][2];
+        			buttonAct("move");
+        			cMoves = $("#" + players[cPlayer][0] + "moves").html();
+        			nMoves = "<li>[ " + clicked[1] + ", " + clicked[2] + " ]</li>";
+        			$("#" + players[cPlayer][0] + "moves ul").append(nMoves);
+        			$("#" + players[cPlayer][0] + "undo").show();
+        		} else {
+        			console.log("You can't click");
+        		}
+        		if (clck == true) {
+        			$(".square").each(function() {
+        				$(this).css("cursor", "not-allowed");
+        			});
+        		}
+        	});
+        	$(".undo").click(function() {
+        		undo();
+        	});
+        	function undo() {
+        		console.log("undoya tıklandı");
+        		clck = false;
+        		$(".square").each(function() {
+        			if ($(this).css("background-color") == "rgba(0, 0, 0, 0)") {
+        				$(this).css("cursor", "pointer");
+        			}
+        		});
+        		$("#box_" + clicked[1] + "_" + clicked[2]).css({
+        			"background-color": "rgba(0, 0, 0, 0)",
+        			"cursor": "pointer"
+        		});
+        		$("#" + players[cPlayer][0] + "undo").hide();
+        		console.log($("#" + players[cPlayer][0] + "moves ul li:last").text());
+        		$("#" + players[cPlayer][0] + "moves ul li:last").remove();
+        		buttonDeac("move");
+        	}
+
+        	$("button#move").click(function() {
+        		if( players[cPlayer][0] == "green"){
+        			greenMvs.push($("span#greenmoves ul li:last").text().trim());
+        		}
+        		else{
+        			redMvs.push($("span#redmoves ul li:last").text().trim());
+        		}
+        		if(greenMvs.length >= 3 || redMvs.length >= 3){
+        			wonCheck();
+        		}
+        		console.log("Move'a tıklandı");
+        		//games.push([ players[cPlayer][0], clicked[1], clicked[2] ]);
+        		console.log("++++++++++++++++");
+        		//console.log(games);
+        		console.log("++++++++++++++++");
+        		$("#move").attr("disabled", true).css("cursor", "not-allowed");
+        		$("#" + players[cPlayer][0] + "undo").hide();
+        		changePlayer(players[cPlayer][0]);
+        		clck = false;
+        	});
+
+
+
+        	// Rules Section
+        	$("button#rls").click(function() {
+        		if ($("#rules").css("visibility") != "visible") {
+        			$("#rules").css("visibility", "visible");
+        		}
+        	});
+
+        	$("#rrs #close img").click(function() {
+        		if ($("#rules").css("visibility") == "visible") {
+        			$("#rules").css("visibility", "hidden");
+        		}
+        	});
+        });
+    </script>
+</head>
+<body>
+	<div id="main">
+		<div class="wrapper">
+			<div id="green">
+				<h4>Green Player Section</h4>
+				<span id="greenturn" class="turn">Players Playing</span>
+				<span id="greenmove" class="moves">Moves</span>
+				<span id="greenmoves" class="movelist">
+					<ul>
+						
+					</ul>
+				</span>
+				<span id="greenundo" class="undo"><i class="fa fa-undo"></i>Undo last Move</span>
+			</div>
+			<div id="game">
+				<div id="box_1_1" class="square" ></div>
+				<div id="box_1_2" class="square"></div>
+				<div id="box_1_3" class="square"></div>
+				<div id="box_2_1" class="square"></div>
+				<div id="box_2_2" class="square"></div>
+				<div id="box_2_3" class="square"></div>
+				<div id="box_3_1" class="square"></div>
+				<div id="box_3_2" class="square"></div>
+				<div id="box_3_3" class="square"></div>
+			</div>
+			<div id="red">
+				<h4>Red Player Section</h4>
+				<span id="redturn" class="turn">Players Playing</span>
+				<span id="redmove" class="moves">Moves</span>
+				<span id="redmoves" class="movelist">
+					<ul>
+						
+					</ul>
+				</span>
+				<span id="redundo" class="undo"><i class="fa fa-undo"></i>Undo last move</span>
+			</div>
+				<ul>
+					<button id="move">Move Completed!</button>
+					<button id='rls'>Rules</button>
+				</ul>
+		</div>
+		<div id="rules">
+			<div id="rls">
+				<h3>Game Rules</h3>
+				<ul>
+					<li>Win: If the player has two in a row, they can place a third to get three in a row.</li>
+					<li>Block: If the opponent has two in a row, the player must play the third themselves to block the opponent.</li>
+					<li>Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).</li>
+					<li>Center: A player marks the center. (If it is the first move of the game, playing on a corner gives the second player more opportunities to make a mistake and may therefore be the better choice; however, it makes no difference between perfect players.)</li>
+					<li>Opposite corner: If the opponent is in the corner, the player plays the opposite corner.</li>
+					<li>Empty corner: The player plays in a corner square.</li>
+					<li>Empty side: The player plays in a middle square on any of the 4 sides.</li>
+				</ul>
+			</div>
+			<div id="rrs">
+				<div id="close">
+					<img src="images/close.png" alt="Close the Rules">
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
